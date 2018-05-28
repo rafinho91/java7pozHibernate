@@ -25,7 +25,9 @@ public class Order implements Serializable {
 
     LocalDateTime date;
     Price totalPrice;
-    String email;
+    @ManyToOne
+    @JoinColumn
+    User user;
 
     @Column(name = "adres_wysylki")
     String cityName;

@@ -31,7 +31,7 @@ public class App {
         ProductRepository.findAll().forEach(p -> System.out.println(p.getId() + " " + p.getName()));
 
         ProductRepository.findAllWithPriceNetLessThan(new BigDecimal("5")).
-                forEach(p -> System.out.println("cena mniejsza niz 5" + p.getName()));
+                forEach(p -> System.out.println("cena mniejsza niz 5 : " + p.getName()));
 
 
         Long sum = ProductRepository.countAll();
@@ -51,7 +51,7 @@ public class App {
 
             Order kowalskiOrder = Order.builder()
                     .date(LocalDateTime.now())
-                    .email("kowalski@gmail.com")
+//                    .email("kowalski@gmail.com")
                     .RODO(true)
                     .cityName("Poznan")
                     .totalPrice(new Price())
@@ -73,8 +73,8 @@ public class App {
             OrderRepository.findAll().forEach(o -> o.getOrderDetailSet()
                     .forEach(od -> System.out.println(od.getProduct().getName())));
 
-            OrderRepository.findAllWithProductName("KEFI").forEach(o -> o.getOrderDetailSet()
-                    .forEach(od -> System.out.println("zamowienia  z kefirem "+ od.getProduct().getName())));
+            OrderRepository.findAllWithProductName("KEFIR").forEach(o -> o.getOrderDetailSet()
+                    .forEach(od -> System.out.println("zamowienia z kefirem "+ od.getProduct().getName())));
 
 
         }
