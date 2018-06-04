@@ -2,9 +2,11 @@ package sda.pl.domain;
 
 
 import lombok.*;
+import sda.pl.repository.CartRepository;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Set;
 
 @Entity
@@ -12,8 +14,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(exclude = {"orderSet", "cartSet", "productRatingSet"})
-public class User implements Serializable{
+@EqualsAndHashCode(exclude = {"productRatingSet", "cart", "orderSet", "advertisingBannerSet"})
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -25,11 +27,44 @@ public class User implements Serializable{
     String cityName;
     String street;
     String password;
-
     @OneToMany(mappedBy = "user")
     Set<Order> orderSet;
-    @OneToMany(mappedBy = "user")
-    Set<Cart> cartSet;
+    @OneToOne(mappedBy = "user")
+    Cart cart;
     @OneToMany(mappedBy = "user")
     Set<ProductRating> productRatingSet;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "advertisement_for_the-user",
+            joinColumns = @JoinColumn(name = "advertising_banner_id",referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    Set<AdvertisingBanner> advertisingBannerSet;
+
+    @Transient
+    BigDecimal totalOrderPrice;
+
+    public User(Long id, String email, BigDecimal totalOrderPrice){
+        this.id = id;
+        this.email = email;
+        this.totalOrderPrice = totalOrderPrice;
+    }
+
+
+    public Cart createCart(){
+        Cart cart = new Cart();
+        cart.setUser(this);
+        return cart;
+    }
+
+    public ProductRating rateProduct(int rate, String description, Product product){
+        ProductRating productRating = new ProductRating();
+        productRating.setActive(false);
+        productRating.setRate(rate);
+        productRating.setDescription(description);
+        productRating.setProduct(product);
+        productRating.setUser(this);
+        return productRating;
+    }
+
 }

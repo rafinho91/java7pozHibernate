@@ -1,13 +1,14 @@
 package sda.pl;
 
-import org.hibernate.Session;
-import sda.pl.domain.Order;
-import sda.pl.domain.OrderDetail;
+import sda.pl.domain.*;
+import sda.pl.repository.AdvertisingBannerRepository;
 import sda.pl.repository.OrderRepository;
 import sda.pl.repository.ProductRepository;
+import sda.pl.repository.UserRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public class App {
@@ -16,8 +17,8 @@ public class App {
 
         Product maslo = Product.builder()
                 .name("Maslo")
-                .color(Color.WHITE)
-                .price(Price.builder().
+                .color(OrderComplaint.Color.WHITE)
+                .price(Order.Price.builder().
                         priceGross(new BigDecimal("6.50"))
                         .priceNet(new BigDecimal("4.25"))
                         .priceSymbol("PLN").build()).build();
@@ -31,7 +32,7 @@ public class App {
         ProductRepository.findAll().forEach(p -> System.out.println(p.getId() + " " + p.getName()));
 
         ProductRepository.findAllWithPriceNetLessThan(new BigDecimal("5")).
-                forEach(p -> System.out.println("cena mniejsza niz 5 : " + p.getName()));
+                forEach(p -> System.out.println("cena mniejsza niz 5" + p.getName()));
 
 
         Long sum = ProductRepository.countAll();
@@ -42,7 +43,7 @@ public class App {
         if (product1.isPresent()) {
             Product product10 = product1.get();
             product10.setName("Kefir");
-            product10.setPrice(Price.builder()
+            product10.setPrice(Order.Price.builder()
                     .priceNet(new BigDecimal("3"))
                     .priceGross(new BigDecimal("3.5"))
                     .priceSymbol("PLN").build());
@@ -54,7 +55,7 @@ public class App {
 //                    .email("kowalski@gmail.com")
                     .RODO(true)
                     .cityName("Poznan")
-                    .totalPrice(new Price())
+                    .totalPrice(new Order.Price())
                     .build();
 
             OrderDetail detail1 = OrderDetail.builder()
@@ -73,12 +74,16 @@ public class App {
             OrderRepository.findAll().forEach(o -> o.getOrderDetailSet()
                     .forEach(od -> System.out.println(od.getProduct().getName())));
 
-            OrderRepository.findAllWithProductName("KEFIR").forEach(o -> o.getOrderDetailSet()
-                    .forEach(od -> System.out.println("zamowienia z kefirem "+ od.getProduct().getName())));
+            OrderRepository.findAllWithProductName("KEFI").forEach(o -> o.getOrderDetailSet()
+                    .forEach(od -> System.out.println("zamowienia  z kefirem "+ od.getProduct().getName())));
 
 
+            UserRepository.findAllWithTotalOrderPrice().
+                    forEach(u -> System.out.println(u.getEmail()+" "+u.getTotalOrderPrice()));
+
+
+            ProductRepository.findByNameCriteriaQuery("KEFI").forEach(p -> System.out.println("criteria: "+p.getName()));
         }
-
 
     }
 }

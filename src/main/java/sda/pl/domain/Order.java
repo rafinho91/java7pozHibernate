@@ -1,7 +1,6 @@
 package sda.pl.domain;
 
 import lombok.*;
-import sda.pl.Price;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -37,6 +36,20 @@ public class Order implements Serializable {
     Set<OrderDetail> orderDetailSet;
 
 
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    // join table do laczenia przez tabele dodatkowa
+    @JoinTable(
+            name = "order_complaint",
+            // joinColumns nazwa kolumny w tabeli dodatkowej z kluczem do tabeli laczonej
+            // + nazwa pola w encji z kluczem
+            // po ktorym laczymy
+            joinColumns=@JoinColumn(name="order_complaint_id", referencedColumnName="id"),
+            // nazwa kolumny z kluczem glownym z enccji Order
+            inverseJoinColumns=@JoinColumn(name="order_id")
+    )
+    Set<OrderComplaint> orderComplaintSet;
+
+
     public void addOrderDetail(OrderDetail od){
         if(orderDetailSet == null){
             orderDetailSet = new HashSet<>();
@@ -48,9 +61,10 @@ public class Order implements Serializable {
     }
 
     public void calculateTotalPrice(){
-        getTotalPrice().setPriceGross(BigDecimal.ZERO);
-        getTotalPrice().setPriceNet(BigDecimal.ZERO);
-        getTotalPrice().setPriceSymbol("PLN");
+        totalPrice = new Price();
+        totalPrice.setPriceGross(BigDecimal.ZERO);
+        totalPrice.setPriceNet(BigDecimal.ZERO);
+        totalPrice.setPriceSymbol("PLN");
 
         getOrderDetailSet().forEach(
                 cd ->
@@ -70,4 +84,18 @@ public class Order implements Serializable {
         );
     }
 
+    @Data
+    @Embeddable
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Price {
+
+        BigDecimal priceGross;
+        BigDecimal priceNet;
+        String priceSymbol;
+
+        @Transient
+        BigDecimal vat;
+    }
 }

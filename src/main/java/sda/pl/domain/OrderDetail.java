@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import sda.pl.Price;
-import sda.pl.Product;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -26,7 +24,12 @@ public class OrderDetail implements Serializable {
     @ManyToOne
     @JoinColumn
     Order order;
-
     Long amount;
-    Price price;
+    Order.Price price;
+
+    public OrderDetail(CartDetail cartDetail){
+        this.price = cartDetail.getPrice();
+        this.amount = cartDetail.getAmount();
+        this.product = cartDetail.getProduct();
+    }
 }

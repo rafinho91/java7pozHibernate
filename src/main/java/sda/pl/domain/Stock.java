@@ -1,29 +1,23 @@
 package sda.pl.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
-@Entity
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class CartDetail implements Serializable{
+@Entity
+public class Stock implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @ManyToOne
+    @Enumerated
+    WarehouseName warehouseName;
+    BigDecimal amount;
     @JoinColumn
+    @ManyToOne
     Product product;
-    Long amount;
-    @Embedded
-    Order.Price price;
-    @ManyToOne
-    @JoinColumn
-    Cart cart;
 }
